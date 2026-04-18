@@ -86,11 +86,11 @@ body{font-family:'Inter',sans-serif;background:#f5f5f5;color:#222;min-height:100
 .main-tab.active{color:#1a56db;border-bottom-color:#1a56db}
 .main-tab:hover:not(.active){color:#444}
 
-/* Search box */
-.search-box{margin-bottom:12px}
-.search-input{width:100%;padding:10px 14px;font-size:13px;border:1px solid #e0e0e0;border-radius:8px;outline:none;transition:all .2s;background:#fff}
-.search-input:focus{border-color:#1a56db;box-shadow:0 0 0 2px rgba(26,86,219,0.1)}
-.search-input::placeholder{color:#aaa}
+/* Sub-stat tabs */
+.sub-tabs{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.sub-tab{padding:5px 14px;font-size:12px;font-weight:500;border-radius:20px;border:1px solid #e0e0e0;background:#fff;color:#555;cursor:pointer;transition:all .15s}
+.sub-tab.active{background:#222;color:#fff;border-color:#222}
+.sub-tab:hover:not(.active){border-color:#aaa;color:#222}
 
 /* Table */
 .tbl-wrap{background:#fff;border:1px solid #e0e0e0;border-radius:8px;overflow:auto}
@@ -118,7 +118,6 @@ th.sortable:hover{color:#444}
 th.sort-active{color:#1a56db}
 .sort-arrow{margin-left:2px;font-size:9px}
 .th-crests{display:flex;align-items:center;gap:3px;font-size:15px}
-.no-result{padding:40px;text-align:center;color:#aaa;font-size:13px}
 
 /* Tab panes */
 .tab-pane{display:none}
@@ -240,9 +239,23 @@ th.sort-active{color:#1a56db}
     <!-- PLAYER STATISTICS -->
     <div class="tab-pane active" id="pane-stats">
 
-      <!-- Search box -->
-      <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Tìm kiếm cầu thủ, đội...">
+      <!-- Team filter -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div class="sub-tabs" style="margin:0">
+          <button class="sub-tab active" data-team="all">Cả hai đội</button>
+          <button class="sub-tab" data-team="arsenal">Arsenal</button>
+          <button class="sub-tab" data-team="monaco">AS Monaco</button>
+        </div>
+      </div>
+
+      <!-- Stat-view tabs -->
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-stat="summary">Summary</button>
+        <button class="sub-tab" data-stat="attack">Attack</button>
+        <button class="sub-tab" data-stat="defence">Defence</button>
+        <button class="sub-tab" data-stat="passing">Passing</button>
+        <button class="sub-tab" data-stat="duels">Duels</button>
+        <button class="sub-tab" data-stat="goalkeeper">Goalkeeper</button>
       </div>
 
       <div class="tbl-wrap">
@@ -267,60 +280,40 @@ th.sort-active{color:#1a56db}
           <tbody id="tbody"></tbody>
         </table>
       </div>
-      <div id="noResult" class="no-result" style="display:none">Không tìm thấy cầu thủ phù hợp</div>
+
     </div>
   </div><!-- /right -->
 </div><!-- /layout -->
 
 <script>
 const players=[
-  {name:"Bukayo Saka", team:"arsenal",teamName:"Arsenal",goals:2,assists:1,tackles:2, pass:"26/30",passN:87, duels:5,dWon:3,gd:5,gdWon:3,ad:0,adWon:0,mins:90,pos:"F",rating:9.4},
-  {name:"Kai Havertz", team:"arsenal",teamName:"Arsenal",goals:1,assists:0,tackles:0, pass:"8/9", passN:89, duels:2,dWon:0,gd:0,gdWon:0,ad:2,adWon:0,mins:17,pos:"F",rating:7.5},
-  {name:"Jakub Kiwior", team:"arsenal",teamName:"Arsenal",goals:0,assists:0,tackles:3, pass:"56/62",passN:90, duels:10,dWon:7,gd:7,gdWon:4,ad:3,adWon:3,mins:90,pos:"D",rating:7.3},
-  {name:"Lamine Camara", team:"monaco",teamName:"AS Monaco",goals:0,assists:0,tackles:3, pass:"50/54",passN:93, duels:9,dWon:6,gd:8,gdWon:6,ad:1,adWon:0,mins:81,pos:"M",rating:7.1},
-  {name:"Martin Ødegaard", team:"arsenal",teamName:"Arsenal",goals:0,assists:0,tackles:0, pass:"26/28",passN:93, duels:2,dWon:0,gd:2,gdWon:0,ad:0,adWon:0,mins:79,pos:"M",rating:7.1},
-  {name:"William Saliba", team:"arsenal",teamName:"Arsenal",goals:0,assists:0,tackles:2, pass:"69/72",passN:96, duels:7,dWon:5,gd:4,gdWon:3,ad:3,adWon:2,mins:90,pos:"D",rating:7.1},
-  {name:"David Raya", team:"arsenal",teamName:"Arsenal",goals:0,assists:0,tackles:0, pass:"27/40",passN:68, duels:0,dWon:0,gd:0,gdWon:0,ad:0,adWon:0,mins:90,pos:"G",rating:7.0},
-  {name:"Declan Rice", team:"arsenal",teamName:"Arsenal",goals:0,assists:0,tackles:1, pass:"54/57",passN:95, duels:5,dWon:2,gd:5,gdWon:2,ad:0,adWon:0,mins:64,pos:"M",rating:7.0},
-  {name:"Ethan Nwaneri", team:"arsenal",teamName:"Arsenal",goals:0,assists:0,tackles:0, pass:"6/6", passN:100,duels:2,dWon:1,gd:2,gdWon:1,ad:0,adWon:0,mins:11,pos:"M",rating:7.0},
-  {name:"Myles Lewis-Skelly",team:"arsenal",teamName:"Arsenal",goals:0,assists:0,tackles:1,pass:"45/47",passN:96, duels:6,dWon:4,gd:5,gdWon:4,ad:1,adWon:0,mins:64,pos:"D",rating:7.0},
-  {name:"Mikel Merino", team:"arsenal",teamName:"Arsenal",goals:0,assists:0,tackles:2, pass:"41/48",passN:85, duels:12,dWon:6,gd:9,gdWon:5,ad:3,adWon:1,mins:90,pos:"M",rating:7.0},
-  {name:"Thomas Partey", team:"arsenal",teamName:"Arsenal",goals:0,assists:0,tackles:1, pass:"53/62",passN:85, duels:7,dWon:4,gd:5,gdWon:3,ad:2,adWon:1,mins:90,pos:"D",rating:7.0},
-  {name:"Gabriel Martinelli",team:"arsenal",teamName:"Arsenal",goals:0,assists:0,tackles:1,pass:"16/20",passN:80, duels:10,dWon:4,gd:9,gdWon:3,ad:1,adWon:1,mins:64,pos:"F",rating:6.9},
-  {name:"Gabriel Jesus", team:"arsenal",teamName:"Arsenal",goals:0,assists:1,tackles:3, pass:"9/11", passN:82, duels:11,dWon:4,gd:10,gdWon:3,ad:1,adWon:1,mins:73,pos:"F",rating:6.8},
+  {name:"Bukayo Saka", team:"arsenal",goals:2,assists:1,tackles:2, pass:"26/30",passN:87, duels:5,dWon:3,gd:5,gdWon:3,ad:0,adWon:0,mins:90,pos:"F",rating:9.4},
+  {name:"Kai Havertz", team:"arsenal",goals:1,assists:0,tackles:0, pass:"8/9", passN:89, duels:2,dWon:0,gd:0,gdWon:0,ad:2,adWon:0,mins:17,pos:"F",rating:7.5},
+  {name:"Jakub Kiwior", team:"arsenal",goals:0,assists:0,tackles:3, pass:"56/62",passN:90, duels:10,dWon:7,gd:7,gdWon:4,ad:3,adWon:3,mins:90,pos:"D",rating:7.3},
+  {name:"Lamine Camara", team:"monaco", goals:0,assists:0,tackles:3, pass:"50/54",passN:93, duels:9,dWon:6,gd:8,gdWon:6,ad:1,adWon:0,mins:81,pos:"M",rating:7.1},
+  {name:"Martin Ødegaard", team:"arsenal",goals:0,assists:0,tackles:0, pass:"26/28",passN:93, duels:2,dWon:0,gd:2,gdWon:0,ad:0,adWon:0,mins:79,pos:"M",rating:7.1},
+  {name:"William Saliba", team:"arsenal",goals:0,assists:0,tackles:2, pass:"69/72",passN:96, duels:7,dWon:5,gd:4,gdWon:3,ad:3,adWon:2,mins:90,pos:"D",rating:7.1},
+  {name:"David Raya", team:"arsenal",goals:0,assists:0,tackles:0, pass:"27/40",passN:68, duels:0,dWon:0,gd:0,gdWon:0,ad:0,adWon:0,mins:90,pos:"G",rating:7.0},
+  {name:"Declan Rice", team:"arsenal",goals:0,assists:0,tackles:1, pass:"54/57",passN:95, duels:5,dWon:2,gd:5,gdWon:2,ad:0,adWon:0,mins:64,pos:"M",rating:7.0},
+  {name:"Ethan Nwaneri", team:"arsenal",goals:0,assists:0,tackles:0, pass:"6/6", passN:100,duels:2,dWon:1,gd:2,gdWon:1,ad:0,adWon:0,mins:11,pos:"M",rating:7.0},
+  {name:"Myles Lewis-Skelly",team:"arsenal",goals:0,assists:0,tackles:1,pass:"45/47",passN:96, duels:6,dWon:4,gd:5,gdWon:4,ad:1,adWon:0,mins:64,pos:"D",rating:7.0},
+  {name:"Mikel Merino", team:"arsenal",goals:0,assists:0,tackles:2, pass:"41/48",passN:85, duels:12,dWon:6,gd:9,gdWon:5,ad:3,adWon:1,mins:90,pos:"M",rating:7.0},
+  {name:"Thomas Partey", team:"arsenal",goals:0,assists:0,tackles:1, pass:"53/62",passN:85, duels:7,dWon:4,gd:5,gdWon:3,ad:2,adWon:1,mins:90,pos:"D",rating:7.0},
+  {name:"Gabriel Martinelli",team:"arsenal",goals:0,assists:0,tackles:1,pass:"16/20",passN:80, duels:10,dWon:4,gd:9,gdWon:3,ad:1,adWon:1,mins:64,pos:"F",rating:6.9},
+  {name:"Gabriel Jesus", team:"arsenal",goals:0,assists:1,tackles:3, pass:"9/11", passN:82, duels:11,dWon:4,gd:10,gdWon:3,ad:1,adWon:1,mins:73,pos:"F",rating:6.8},
 ];
 
 function chipCls(r){return r>=9?'c-great':r>=7.5?'c-good':r>=7?'c-ok':'c-avg'}
 function tColor(t){return t==='arsenal'?'#ef0107':'#C8102E'}
 
-let searchKeyword='', sortCol='rating', sortDir=-1;
+let curTeam='all', sortCol='rating', sortDir=-1;
 
 function render(){
-  let list=[...players];
-  
-  // Filter by search keyword
-  if(searchKeyword.trim()!==''){
-    const kw=searchKeyword.toLowerCase().trim();
-    list=list.filter(p=> 
-      p.name.toLowerCase().includes(kw) || 
-      p.teamName.toLowerCase().includes(kw)
-    );
-  }
-  
-  // Sort
-  list.sort((a,b)=>sortDir*(a[sortCol]>b[sortCol]?1:a[sortCol]<b[sortCol]?-1:0));
-  
-  const tbody=document.getElementById('tbody');
-  const noResult=document.getElementById('noResult');
-  
-  if(list.length===0){
-    tbody.innerHTML='';
-    noResult.style.display='block';
-    return;
-  }
-  
-  noResult.style.display='none';
-  tbody.innerHTML=list.map(p=>`
+  const list=[...players]
+    .filter(p=>curTeam==='all'||p.team===curTeam)
+    .sort((a,b)=>sortDir*(a[sortCol]>b[sortCol]?1:a[sortCol]<b[sortCol]?-1:0));
+
+  document.getElementById('tbody').innerHTML=list.map(p=>`
     <tr>
       <td><div class="pcell">
         <div class="pdot" style="background:${tColor(p.team)}"></div>
@@ -340,10 +333,20 @@ function render(){
   `).join('');
 }
 
-// Search input
-document.getElementById('searchInput').addEventListener('input',(e)=>{
-  searchKeyword=e.target.value;
-  render();
+// Team filter
+document.querySelectorAll('[data-team]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-team]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');curTeam=b.dataset.team;render();
+  });
+});
+
+// Stat sub-tabs (cosmetic)
+document.querySelectorAll('[data-stat]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-stat]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+  });
 });
 
 // Sort
