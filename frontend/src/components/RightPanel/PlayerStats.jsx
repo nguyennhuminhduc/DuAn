@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function PlayerStats({ players = [], match }) {
+export default function PlayerStats({ players }) {
   const [curTeam, setCurTeam] = useState("all");
   const [sortCol, setSortCol] = useState("rating");
   const [sortDir, setSortDir] = useState(-1);
