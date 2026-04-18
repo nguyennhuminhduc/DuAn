@@ -1,17 +1,33 @@
-export default function TopBar() {
+export default function TopBar({ match }) {
   return (
     <div className="top-bar">
-      <span className="comp-label">UEFA Champions League · Round of 16</span>
+      <span className="comp-label">
+        {match?.league?.name} · {match?.league?.round}
+      </span>
+
       <div className="score-block">
+        {/* HOME */}
         <div className="team-s">
-          <span className="crest">🔴</span> Arsenal
+          <span className="crest">🔴</span>{" "}
+          {match?.teams?.home?.name || "Loading..."}
         </div>
-        <div className="score-nums">3 – 0</div>
+
+        {/* SCORE */}
+        <div className="score-nums">
+          {match?.goals?.home ?? "-"} – {match?.goals?.away ?? "-"}
+        </div>
+
+        {/* AWAY */}
         <div className="team-s">
-          AS Monaco <span className="crest">🔴</span>
+          {match?.teams?.away?.name || "Loading..."}{" "}
+          <span className="crest">🔴</span>
         </div>
-        <span className="ft-tag">FT +3'</span>
+
+        {/* STATUS */}
+        <span className="ft-tag">
+          {match?.fixture?.status?.short || "..."}
+        </span>
       </div>
     </div>
-  )
+  );
 }

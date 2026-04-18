@@ -1,131 +1,136 @@
-import { useState } from 'react'
-import { players } from '../data/playersData'
+import { useState } from "react";
 
-export default function PlayerStats() {
-  const [curTeam, setCurTeam] = useState('all')
-  const [sortCol, setSortCol] = useState('rating')
-  const [sortDir, setSortDir] = useState(-1)
+export default function PlayerStats({ players = [] }) {
+  const [curTeam, setCurTeam] = useState("all");
+  const [sortCol, setSortCol] = useState("rating");
+  const [sortDir, setSortDir] = useState(-1);
 
   const getChipClass = (rating) => {
-    return rating >= 9 ? 'c-great' : rating >= 7.5 ? 'c-good' : rating >= 7 ? 'c-ok' : 'c-avg'
-  }
+    return rating >= 9
+      ? "c-great"
+      : rating >= 7.5
+      ? "c-good"
+      : rating >= 7
+      ? "c-ok"
+      : "c-avg";
+  };
 
   const getTeamColor = (team) => {
-    return team === 'arsenal' ? '#ef0107' : '#C8102E'
-  }
+    return team === "home" ? "#ef0107" : "#C8102E";
+  };
 
   const handleSort = (col) => {
     if (sortCol === col) {
-      setSortDir(sortDir * -1)
+      setSortDir(sortDir * -1);
     } else {
-      setSortCol(col)
-      setSortDir(-1)
+      setSortCol(col);
+      setSortDir(-1);
     }
-  }
+  };
 
-  const filteredAndSorted = [...players]
-    .filter(p => curTeam === 'all' || p.team === curTeam)
-    .sort((a, b) => sortDir * (a[sortCol] > b[sortCol] ? 1 : a[sortCol] < b[sortCol] ? -1 : 0))
+  // 🔥 Convert data từ API-Football
+  const mappedPlayers = players.map((p) => {
+    const stats = p.statistics?.[0];
+
+    return {
+      name: p.player.name,
+      team: stats?.team?.id === 42 ? "home" : "away",
+
+      goals: stats?.goals?.total || 0,
+      assists: stats?.goals?.assists || 0,
+      tackles: stats?.tackles?.total || 0,
+
+      pass: stats?.passes?.total || 0,
+      passN: stats?.passes?.accuracy || 0,
+
+      duels: stats?.duels?.total || 0,
+      dWon: stats?.duels?.won || 0,
+
+      gd: stats?.duels?.total || 0,
+      gdWon: stats?.duels?.won || 0,
+
+      ad: stats?.duels?.total || 0,
+      adWon: stats?.duels?.won || 0,
+
+      mins: stats?.games?.minutes || 0,
+      pos: stats?.games?.position || "-",
+
+      rating: parseFloat(stats?.games?.rating) || 0,
+    };
+  });
+
+  const filteredAndSorted = mappedPlayers
+    .filter((p) => curTeam === "all" || p.team === curTeam)
+    .sort(
+      (a, b) =>
+        sortDir *
+        (a[sortCol] > b[sortCol]
+          ? 1
+          : a[sortCol] < b[sortCol]
+          ? -1
+          : 0)
+    );
 
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-        <div className="sub-tabs" style={{ margin: 0 }}>
-          <button 
-            className={`sub-tab ${curTeam === 'all' ? 'active' : ''}`}
-            onClick={() => setCurTeam('all')}
-          >
-            Cả hai đội
-          </button>
-          <button 
-            className={`sub-tab ${curTeam === 'arsenal' ? 'active' : ''}`}
-            onClick={() => setCurTeam('arsenal')}
-          >
-            Arsenal
-          </button>
-          <button 
-            className={`sub-tab ${curTeam === 'monaco' ? 'active' : ''}`}
-            onClick={() => setCurTeam('monaco')}
-          >
-            AS Monaco
-          </button>
-        </div>
+      {/* FILTER */}
+      <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+        <button onClick={() => setCurTeam("all")}>All</button>
+        <button onClick={() => setCurTeam("home")}>Home</button>
+        <button onClick={() => setCurTeam("away")}>Away</button>
       </div>
 
-      <div className="sub-tabs">
-        <button className="sub-tab active" data-stat="summary">Summary</button>
-        <button className="sub-tab" data-stat="attack">Attack</button>
-        <button className="sub-tab" data-stat="defence">Defence</button>
-        <button className="sub-tab" data-stat="passing">Passing</button>
-        <button className="sub-tab" data-stat="duels">Duels</button>
-        <button className="sub-tab" data-stat="goalkeeper">Goalkeeper</button>
-      </div>
-
+      {/* TABLE */}
       <div className="tbl-wrap">
-        <table id="stats-table">
+        <table>
           <thead>
             <tr>
-              <th style={{ width: '175px' }}>
-                <div className="th-crests">🔴<span style={{ color: '#ccc', fontSize: '12px' }}>+</span>🔴 &nbsp; 🔴 &nbsp; 🔴</div>
-              </th>
-              <th className="sortable" onClick={() => handleSort('goals')}>
-                Goals<br /><span className="sort-arrow">{sortCol === 'goals' ? (sortDir === -1 ? '▼' : '▲') : '▼'}</span>
-              </th>
-              <th className="sortable" onClick={() => handleSort('assists')}>
-                Assists<br /><span className="sort-arrow">{sortCol === 'assists' ? (sortDir === -1 ? '▼' : '▲') : '▼'}</span>
-              </th>
-              <th className="sortable" onClick={() => handleSort('tackles')}>
-                Total<br />tackles<br /><span className="sort-arrow">{sortCol === 'tackles' ? (sortDir === -1 ? '▼' : '▲') : '▼'}</span>
-              </th>
-              <th className="sortable" onClick={() => handleSort('passN')}>
-                Accurate<br />passes<br /><span className="sort-arrow">{sortCol === 'passN' ? (sortDir === -1 ? '▼' : '▲') : '▼'}</span>
-              </th>
-              <th className="sortable" onClick={() => handleSort('duels')}>
-                Duels<br />(won)<br /><span className="sort-arrow">{sortCol === 'duels' ? (sortDir === -1 ? '▼' : '▲') : '▼'}</span>
-              </th>
-              <th className="sortable" onClick={() => handleSort('gdWon')}>
-                Ground<br />duels (won)<br /><span className="sort-arrow">{sortCol === 'gdWon' ? (sortDir === -1 ? '▼' : '▲') : '▼'}</span>
-              </th>
-              <th className="sortable" onClick={() => handleSort('adWon')}>
-                Aerial<br />duels (won)<br /><span className="sort-arrow">{sortCol === 'adWon' ? (sortDir === -1 ? '▼' : '▲') : '▼'}</span>
-              </th>
-              <th className="sortable" onClick={() => handleSort('mins')}>
-                Minutes<br />played<br /><span className="sort-arrow">{sortCol === 'mins' ? (sortDir === -1 ? '▼' : '▲') : '▼'}</span>
-              </th>
-              <th>
-                Position<br /><span className="sort-arrow">▼</span>
-              </th>
-              <th className={`sortable ${sortCol === 'rating' ? 'sort-active' : ''}`} onClick={() => handleSort('rating')}>
-                Sofascore<br />Rating<br /><span className="sort-arrow" style={{ color: sortCol === 'rating' ? '#1a56db' : '#888' }}>
-                  {sortCol === 'rating' ? (sortDir === -1 ? '▼' : '▲') : '▼'}
-                </span>
-              </th>
+              <th>Name</th>
+              <th onClick={() => handleSort("goals")}>Goals</th>
+              <th onClick={() => handleSort("assists")}>Assists</th>
+              <th onClick={() => handleSort("tackles")}>Tackles</th>
+              <th onClick={() => handleSort("passN")}>Pass %</th>
+              <th onClick={() => handleSort("duels")}>Duels</th>
+              <th onClick={() => handleSort("mins")}>Minutes</th>
+              <th>Pos</th>
+              <th onClick={() => handleSort("rating")}>Rating</th>
             </tr>
           </thead>
+
           <tbody>
             {filteredAndSorted.map((player, idx) => (
               <tr key={idx}>
                 <td>
-                  <div className="pcell">
-                    <div className="pdot" style={{ background: getTeamColor(player.team) }}></div>
-                    <span className="pname">{player.name}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <div
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: getTeamColor(player.team),
+                      }}
+                    ></div>
+                    {player.name}
                   </div>
                 </td>
-                <td className={player.goals > 0 ? 'val' : 'zero'}>{player.goals > 0 ? player.goals : '0'}</td>
-                <td className={player.assists > 0 ? 'val' : 'zero'}>{player.assists > 0 ? player.assists : '0'}</td>
-                <td className={player.tackles > 0 ? 'val' : 'zero'}>{player.tackles > 0 ? player.tackles : '0'}</td>
-                <td>{player.pass} <span style={{ color: '#aaa' }}>({player.passN}%)</span></td>
-                <td>{player.duels} <span style={{ color: '#aaa' }}>({player.dWon})</span></td>
-                <td>{player.gd} <span style={{ color: '#aaa' }}>({player.gdWon})</span></td>
-                <td>{player.ad} <span style={{ color: '#aaa' }}>({player.adWon})</span></td>
-                <td>{player.mins}'</td>
-                <td><span className="pos-chip">{player.pos}</span></td>
-                <td><span className={`chip ${getChipClass(player.rating)}`}>{player.rating.toFixed(1)}</span></td>
+
+                <td>{player.goals}</td>
+                <td>{player.assists}</td>
+                <td>{player.tackles}</td>
+                <td>{player.passN}%</td>
+                <td>{player.duels}</td>
+                <td>{player.mins}</td>
+                <td>{player.pos}</td>
+                <td>
+                  <span className={`chip ${getChipClass(player.rating)}`}>
+                    {player.rating.toFixed(1)}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
     </>
-  )
+  );
 }

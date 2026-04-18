@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { API_URL } from "./config";
 import HandicapCard from './components/LeftPanel/HandicapCard'
 import MomentumChart from './components/LeftPanel/MomentumChart'
 import PlayerOfMatch from './components/LeftPanel/PlayerOfMatch'
@@ -10,7 +11,7 @@ import TopBar from "./components/TopBar";
 function App() {
   const [activeTab, setActiveTab] = useState("stats");
 
-  // 🔥 DATA từ backend
+  // 🔥 DATA
   const [match, setMatch] = useState(null);
   const [players, setPlayers] = useState([]);
 
@@ -21,7 +22,6 @@ function App() {
         const res = await fetch(`${API_URL}/api/matches`);
         const data = await res.json();
 
-        // lấy trận đầu tiên
         setMatch(data.response?.[0] || null);
       } catch (err) {
         console.error("Lỗi load match:", err);
@@ -49,6 +49,7 @@ function App() {
 
   return (
     <>
+      {/* ✅ TRUYỀN match vào TopBar */}
       <TopBar match={match} />
 
       <div className="layout">
@@ -78,15 +79,13 @@ function App() {
             </div>
           </div>
 
-          <div
-            className={`tab-pane ${activeTab === "lineups" ? "active" : ""}`}
-          >
+          {/* LINEUPS */}
+          <div className={`tab-pane ${activeTab === "lineups" ? "active" : ""}`}>
             <Lineups match={match} />
           </div>
 
-          <div
-            className={`tab-pane ${activeTab === "stats" ? "active" : ""}`}
-          >
+          {/* PLAYER STATS */}
+          <div className={`tab-pane ${activeTab === "stats" ? "active" : ""}`}>
             <PlayerStats players={players} />
           </div>
         </div>
