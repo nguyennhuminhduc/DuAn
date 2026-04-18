@@ -8,7 +8,7 @@ import PlayerOfMatch from "./components/LeftPanel/PlayerOfMatch";
 import Timeline from "./components/LeftPanel/Timeline";
 
 import Lineups from "./components/RightPanel/Lineups";
-import PlayerStats from "./components/RightPanel/PlayerStats";
+import PlayerStats from "./components/RightPanel/PlayerStats"; 
 function App() {
   const [activeTab, setActiveTab] = useState("stats");
 
