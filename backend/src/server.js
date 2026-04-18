@@ -14,6 +14,7 @@ const __dirname = path.resolve();
 
 const app = express();
 
+
 // middlewares
 app.use(express.json());
 
@@ -25,7 +26,12 @@ if (process.env.NODE_ENV !== "production") {
 // 🔍 Search player
 app.get("/api/players", async (req, res) => {
   try {
-    const name = req.query.name;
+    const name = req.query.search; // FIX ở đây
+    
+
+    if (!name) {
+      return res.status(400).json({ error: "Missing search query" });
+    }
 
     const response = await fetch(
       `https://v3.football.api-sports.io/players?search=${name}`,
