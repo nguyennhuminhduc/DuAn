@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { API_URL } from "./config";
-import HandicapCard from './components/LeftPanel/HandicapCard'
-import MomentumChart from './components/LeftPanel/MomentumChart'
-import PlayerOfMatch from './components/LeftPanel/PlayerOfMatch'
-import Timeline from './components/LeftPanel/Timeline'
-import PlayerStats from './components/RightPanel/PlayerStats'
-import Lineups from './components/RightPanel/Lineups'
 import TopBar from "./components/TopBar";
 
+import HandicapCard from "./components/LeftPanel/HandicapCard";
+import MomentumChart from "./components/LeftPanel/MomentumChart";
+import PlayerOfMatch from "./components/LeftPanel/PlayerOfMatch";
+import Timeline from "./components/LeftPanel/Timeline";
+
+import Lineups from "./components/RightPanel/Lineups";
+import PlayerStats from "./components/RightPanel/PlayerStats";
 function App() {
   const [activeTab, setActiveTab] = useState("stats");
 

@@ -1,10 +1,11 @@
 import { useState } from "react";
 
-export default function PlayerStats({ players = [] }) {
+export default function PlayerStats({ players = [], match }) {
   const [curTeam, setCurTeam] = useState("all");
   const [sortCol, setSortCol] = useState("rating");
   const [sortDir, setSortDir] = useState(-1);
 
+  // ===== UI HELPERS =====
   const getChipClass = (rating) => {
     return rating >= 9
       ? "c-great"
@@ -28,13 +29,17 @@ export default function PlayerStats({ players = [] }) {
     }
   };
 
-  // 🔥 Convert data từ API-Football
-  const mappedPlayers = players.map((p) => {
+  // ===== MAP DATA TỪ API =====
+  const mappedPlayers = (players || []).map((p) => {
     const stats = p.statistics?.[0];
 
     return {
-      name: p.player.name,
-      team: stats?.team?.id === 42 ? "home" : "away",
+      name: p.player?.name || "Unknown",
+
+      team:
+        stats?.team?.id === match?.teams?.home?.id
+          ? "home"
+          : "away",
 
       goals: stats?.goals?.total || 0,
       assists: stats?.goals?.assists || 0,
@@ -55,21 +60,21 @@ export default function PlayerStats({ players = [] }) {
       mins: stats?.games?.minutes || 0,
       pos: stats?.games?.position || "-",
 
-      rating: parseFloat(stats?.games?.rating) || 0,
+      rating: stats?.games?.rating
+        ? parseFloat(stats.games.rating)
+        : 0,
     };
   });
 
+  // ===== FILTER + SORT =====
   const filteredAndSorted = mappedPlayers
     .filter((p) => curTeam === "all" || p.team === curTeam)
-    .sort(
-      (a, b) =>
-        sortDir *
-        (a[sortCol] > b[sortCol]
-          ? 1
-          : a[sortCol] < b[sortCol]
-          ? -1
-          : 0)
-    );
+    .sort((a, b) => {
+      const valA = a[sortCol] || 0;
+      const valB = b[sortCol] || 0;
+
+      return sortDir * (valA > valB ? 1 : valA < valB ? -1 : 0);
+    });
 
   return (
     <>
