@@ -284,118 +284,53 @@ th.sort-active{color:#1a56db}
     </div>
   </div><!-- /right -->
 </div><!-- /layout -->
+fetchPlayers();
 
 <script>
-const players=[
-  {name:"Bukayo Saka", team:"arsenal",goals:2,assists:1,tackles:2, pass:"26/30",passN:87, duels:5,dWon:3,gd:5,gdWon:3,ad:0,adWon:0,mins:90,pos:"F",rating:9.4},
-  {name:"Kai Havertz", team:"arsenal",goals:1,assists:0,tackles:0, pass:"8/9", passN:89, duels:2,dWon:0,gd:0,gdWon:0,ad:2,adWon:0,mins:17,pos:"F",rating:7.5},
-  {name:"Jakub Kiwior", team:"arsenal",goals:0,assists:0,tackles:3, pass:"56/62",passN:90, duels:10,dWon:7,gd:7,gdWon:4,ad:3,adWon:3,mins:90,pos:"D",rating:7.3},
-  {name:"Lamine Camara", team:"monaco", goals:0,assists:0,tackles:3, pass:"50/54",passN:93, duels:9,dWon:6,gd:8,gdWon:6,ad:1,adWon:0,mins:81,pos:"M",rating:7.1},
-  {name:"Martin Ødegaard", team:"arsenal",goals:0,assists:0,tackles:0, pass:"26/28",passN:93, duels:2,dWon:0,gd:2,gdWon:0,ad:0,adWon:0,mins:79,pos:"M",rating:7.1},
-  {name:"William Saliba", team:"arsenal",goals:0,assists:0,tackles:2, pass:"69/72",passN:96, duels:7,dWon:5,gd:4,gdWon:3,ad:3,adWon:2,mins:90,pos:"D",rating:7.1},
-  {name:"David Raya", team:"arsenal",goals:0,assists:0,tackles:0, pass:"27/40",passN:68, duels:0,dWon:0,gd:0,gdWon:0,ad:0,adWon:0,mins:90,pos:"G",rating:7.0},
-  {name:"Declan Rice", team:"arsenal",goals:0,assists:0,tackles:1, pass:"54/57",passN:95, duels:5,dWon:2,gd:5,gdWon:2,ad:0,adWon:0,mins:64,pos:"M",rating:7.0},
-  {name:"Ethan Nwaneri", team:"arsenal",goals:0,assists:0,tackles:0, pass:"6/6", passN:100,duels:2,dWon:1,gd:2,gdWon:1,ad:0,adWon:0,mins:11,pos:"M",rating:7.0},
-  {name:"Myles Lewis-Skelly",team:"arsenal",goals:0,assists:0,tackles:1,pass:"45/47",passN:96, duels:6,dWon:4,gd:5,gdWon:4,ad:1,adWon:0,mins:64,pos:"D",rating:7.0},
-  {name:"Mikel Merino", team:"arsenal",goals:0,assists:0,tackles:2, pass:"41/48",passN:85, duels:12,dWon:6,gd:9,gdWon:5,ad:3,adWon:1,mins:90,pos:"M",rating:7.0},
-  {name:"Thomas Partey", team:"arsenal",goals:0,assists:0,tackles:1, pass:"53/62",passN:85, duels:7,dWon:4,gd:5,gdWon:3,ad:2,adWon:1,mins:90,pos:"D",rating:7.0},
-  {name:"Gabriel Martinelli",team:"arsenal",goals:0,assists:0,tackles:1,pass:"16/20",passN:80, duels:10,dWon:4,gd:9,gdWon:3,ad:1,adWon:1,mins:64,pos:"F",rating:6.9},
-  {name:"Gabriel Jesus", team:"arsenal",goals:0,assists:1,tackles:3, pass:"9/11", passN:82, duels:11,dWon:4,gd:10,gdWon:3,ad:1,adWon:1,mins:73,pos:"F",rating:6.8},
-];
+let players = [];
+let curTeam = 'all', sortCol = 'rating', sortDir = -1;
 
-function chipCls(r){return r>=9?'c-great':r>=7.5?'c-good':r>=7?'c-ok':'c-avg'}
-function tColor(t){return t==='arsenal'?'#ef0107':'#C8102E'}
+// 🔥 CALL API
+async function fetchPlayers() {
+  try {
+    const res = await fetch("/api/players?name=messi"); 
+    const data = await res.json();
 
-let curTeam='all', sortCol='rating', sortDir=-1;
+    console.log("API DATA:", data);
 
-function render(){
-  const list=[...players]
-    .filter(p=>curTeam==='all'||p.team===curTeam)
-    .sort((a,b)=>sortDir*(a[sortCol]>b[sortCol]?1:a[sortCol]<b[sortCol]?-1:0));
+    // map dữ liệu từ API football
+    players = (data.response || []).map(p => {
+      const stats = p.statistics?.[0];
 
-  document.getElementById('tbody').innerHTML=list.map(p=>`
-    <tr>
-      <td><div class="pcell">
-        <div class="pdot" style="background:${tColor(p.team)}"></div>
-        <span class="pname">${p.name}</span>
-      </div></td>
-      <td class="${p.goals>0?'val':'zero'}">${p.goals>0?p.goals:'0'}</td>
-      <td class="${p.assists>0?'val':'zero'}">${p.assists>0?p.assists:'0'}</td>
-      <td class="${p.tackles>0?'val':'zero'}">${p.tackles>0?p.tackles:'0'}</td>
-      <td>${p.pass} <span style="color:#aaa">(${p.passN}%)</span></td>
-      <td>${p.duels} <span style="color:#aaa">(${p.dWon})</span></td>
-      <td>${p.gd} <span style="color:#aaa">(${p.gdWon})</span></td>
-      <td>${p.ad} <span style="color:#aaa">(${p.adWon})</span></td>
-      <td>${p.mins}'</td>
-      <td><span class="pos-chip">${p.pos}</span></td>
-      <td><span class="chip ${chipCls(p.rating)}">${p.rating.toFixed(1)}</span></td>
-    </tr>
-  `).join('');
-}
+      return {
+        name: p.player?.name || "Unknown",
+        team: stats?.team?.name?.toLowerCase().includes("arsenal") ? "arsenal" : "monaco",
 
-// Team filter
-document.querySelectorAll('[data-team]').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('[data-team]').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');curTeam=b.dataset.team;render();
-  });
-});
+        goals: stats?.goals?.total || 0,
+        assists: stats?.goals?.assists || 0,
+        tackles: stats?.tackles?.total || 0,
 
-// Stat sub-tabs (cosmetic)
-document.querySelectorAll('[data-stat]').forEach(b=>{
-  b.addEventListener('click',()=>{
-    document.querySelectorAll('[data-stat]').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');
-  });
-});
+        pass: stats?.passes?.total || 0,
+        passN: stats?.passes?.accuracy || 0,
 
-// Sort
-document.querySelectorAll('.sortable').forEach(th=>{
-  th.addEventListener('click',()=>{
-    if(sortCol===th.dataset.col)sortDir*=-1;
-    else{sortCol=th.dataset.col;sortDir=-1;}
-    document.querySelectorAll('th').forEach(t=>t.classList.remove('sort-active'));
-    th.classList.add('sort-active');
+        duels: stats?.duels?.total || 0,
+        dWon: stats?.duels?.won || 0,
+
+        gd: stats?.duels?.total || 0,
+        gdWon: stats?.duels?.won || 0,
+
+        ad: stats?.duels?.total || 0,
+        adWon: stats?.duels?.won || 0,
+
+        mins: stats?.games?.minutes || 0,
+        pos: stats?.games?.position || "-",
+
+        rating: parseFloat(stats?.games?.rating) || 0
+      };
+    });
+
     render();
-  });
-});
-
-// Main tabs
-document.querySelectorAll('.main-tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    document.querySelectorAll('.main-tab').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById('pane-'+t.dataset.main).classList.add('active');
-  });
-});
-
-// ── MOMENTUM CHART ──
-(function(){
-  const ch=document.getElementById('chart');
-  const A=[2,4,6,3,5,8,6,4,7,9,5,3,6,8,7,5,4,6,9,8,7,6,5,4,3,5,7,8,6,4];
-  const M=[5,3,4,6,4,3,5,7,4,3,6,8,5,3,4,6,5,4,3,4,5,4,3,5,6,4,5,3,4,5];
-  const mx=Math.max(...A,...M);
-  const H=28;
-  A.forEach((a,i)=>{
-    const col=document.createElement('div');
-    col.className='chart-col';
-    const aH=Math.round((a/mx)*H);
-    const mH=Math.round((M[i]/mx)*H);
-    col.innerHTML=`
-      <div style="flex:1;display:flex;align-items:flex-end">
-        <div class="bar-a" style="width:100%;height:${aH}px"></div>
-      </div>
-      <div class="bar-gap"></div>
-      <div style="flex:1;display:flex;align-items:flex-start">
-        <div class="bar-m" style="width:100%;height:${mH}px"></div>
-      </div>
-    `;
-    ch.appendChild(col);
-  });
-})();
-
-render();
-</script>
-</body>
-</html>
+  } catch (err) {
+    console.error("Lỗi API:", err);
+  }
+}
