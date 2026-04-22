@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import TopBar from './components/TopBar'
 import LeftPanel from './components/LeftPanel'
-import Timeline from './components/Timeline'
-import Lineups from './components/Lineups'
-import PlayerStats from './components/PlayerStats'
-import PlayerOfMatch from './components/PlayerOfMatch'
-import HandicapCard from './components/HandicapCard'
-import MomentumChart from './components/MomentumChart'
+import MatchDetails from './components/MatchDetails'
 import { fetchMatches } from './lib/api'
 import './App.css'
 
@@ -24,7 +19,6 @@ function App() {
     try {
       const data = await fetchMatches()
       
-      // Transform API data to match component format
       const transformedMatches = data.map(fixture => ({
         id: fixture.fixture.id,
         homeTeam: {
@@ -37,9 +31,11 @@ function App() {
         },
         homeScore: fixture.goals.home ?? 0,
         awayScore: fixture.goals.away ?? 0,
-        status: fixture.fixture.status.short,
+        status: fixture.fixture.status.short === 'FT' ? 'Full Time' : 
+                 fixture.fixture.status.short === 'LIVE' ? 'Live' : 'Not Started',
         date: fixture.fixture.date,
-        venue: fixture.fixture.venue.name
+        venue: fixture.fixture.venue.name,
+        additionalTime: fixture.fixture.status.elapsed || null
       }))
       
       setMatches(transformedMatches)
@@ -64,38 +60,16 @@ function App() {
 
   return (
     <div className="app">
-      <TopBar onSearch={setMatches} />
+      <TopBar />
       <div className="main-container">
-        <LeftPanel matches={matches} onSelectMatch={setSelectedMatch} />
+        <LeftPanel 
+          matches={matches} 
+          selectedMatch={selectedMatch}
+          onSelectMatch={setSelectedMatch} 
+        />
         <div className="content-container">
           {selectedMatch ? (
-            <>
-              <div className="match-header">
-                <div className="team">
-                  <img src={selectedMatch.homeTeam.logo} alt={selectedMatch.homeTeam.name} />
-                  <span>{selectedMatch.homeTeam.name}</span>
-                  <span className="score">{selectedMatch.homeScore}</span>
-                </div>
-                <div className="vs">VS</div>
-                <div className="team">
-                  <span className="score">{selectedMatch.awayScore}</span>
-                  <span>{selectedMatch.awayTeam.name}</span>
-                  <img src={selectedMatch.awayTeam.logo} alt={selectedMatch.awayTeam.name} />
-                </div>
-              </div>
-              <div className="match-info">
-                <span>{selectedMatch.venue}</span>
-                <span className="status">{selectedMatch.status}</span>
-              </div>
-              <div className="stats-grid">
-                <Timeline matchId={selectedMatch.id} />
-                <Lineups matchId={selectedMatch.id} />
-                <PlayerStats matchId={selectedMatch.id} />
-                <PlayerOfMatch matchId={selectedMatch.id} />
-                <HandicapCard matchId={selectedMatch.id} />
-                <MomentumChart matchId={selectedMatch.id} />
-              </div>
-            </>
+            <MatchDetails match={selectedMatch} />
           ) : (
             <div className="no-match">Chọn một trận đấu để xem chi tiết</div>
           )}

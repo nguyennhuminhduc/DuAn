@@ -1,17 +1,17 @@
 import React from 'react'
 import './LeftPanel.css'
 
-const LeftPanel = ({ matches, onSelectMatch }) => {
+const LeftPanel = ({ matches, selectedMatch, onSelectMatch }) => {
   return (
     <div className="left-panel">
       <div className="panel-header">
-        <h3>Trận đấu hôm nay</h3>
+        <h3>⚽ Trận đấu hôm nay</h3>
       </div>
       <div className="matches-list">
         {matches.map((match) => (
           <div
             key={match.id}
-            className="match-item"
+            className={`match-item ${selectedMatch?.id === match.id ? 'selected' : ''}`}
             onClick={() => onSelectMatch(match)}
           >
             <div className="match-teams">
@@ -28,7 +28,7 @@ const LeftPanel = ({ matches, onSelectMatch }) => {
               </div>
             </div>
             <div className="match-status">
-              <span className={`status-badge ${match.status === 'LIVE' ? 'live' : ''}`}>
+              <span className={`status-badge ${match.status === 'Live' ? 'live' : ''}`}>
                 {match.status}
               </span>
             </div>
