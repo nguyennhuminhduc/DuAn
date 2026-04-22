@@ -1,6 +1,7 @@
 const config = {
   apiKey: import.meta.env.VITE_API_KEY,
   apiUrl: import.meta.env.VITE_API_URL,
+  backendUrl: import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000',
   leagues: {
     premierLeague: 39,
     laLiga: 140,
