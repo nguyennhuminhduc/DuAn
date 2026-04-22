@@ -8,4 +8,25 @@
 .momentum-chart h3 {
   margin-bottom: 20px;
   color: #333;
+  font-size: 18px;
+}
+
+.recharts-wrapper {
+  margin: 0 auto;
+}
+
+.recharts-tooltip-wrapper {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 5px;
+  padding: 5px;
+}
+
+@media (max-width: 768px) {
+  .momentum-chart {
+    padding: 15px;
+  }
+  
+  .momentum-chart h3 {
+    font-size: 16px;
+  }
 }

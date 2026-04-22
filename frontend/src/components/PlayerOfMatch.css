@@ -8,6 +8,7 @@
 .player-of-match h3 {
   margin-bottom: 20px;
   color: #333;
+  font-size: 18px;
 }
 
 .pom-card {
@@ -18,23 +19,61 @@
   color: white;
   position: relative;
   overflow: hidden;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pom-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .pom-badge {
   font-size: 48px;
   margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 .pom-name {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 .pom-rating {
   font-size: 36px;
   font-weight: bold;
   margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .pom-stats {
@@ -42,12 +81,20 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 15px;
   margin-top: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .stat {
   background: rgba(255, 255, 255, 0.2);
   padding: 10px;
   border-radius: 10px;
+  transition: transform 0.2s;
+}
+
+.stat:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .stat-label {
@@ -61,4 +108,22 @@
   display: block;
   font-size: 20px;
   font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .pom-card {
+    padding: 20px;
+  }
+  
+  .pom-name {
+    font-size: 20px;
+  }
+  
+  .pom-rating {
+    font-size: 28px;
+  }
+  
+  .stat-value {
+    font-size: 16px;
+  }
 }

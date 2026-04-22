@@ -8,6 +8,7 @@
 .handicap-card h3 {
   margin-bottom: 20px;
   color: #333;
+  font-size: 18px;
 }
 
 .odds-container {
@@ -20,12 +21,19 @@
   background: #f8f9fa;
   border-radius: 10px;
   padding: 15px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.odd-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .odd-type {
   font-weight: bold;
   color: #667eea;
   margin-bottom: 10px;
+  font-size: 16px;
 }
 
 .odd-values {
@@ -33,14 +41,30 @@
   justify-content: space-around;
   align-items: center;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .odd-values span {
   font-size: 16px;
   font-weight: 500;
+  color: #333;
 }
 
 .odd-ratio {
   color: #4caf50;
   font-weight: bold;
+  background: rgba(76, 175, 80, 0.1);
+  padding: 4px 8px;
+  border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .odd-values {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .odd-values span {
+    font-size: 14px;
+  }
 }
