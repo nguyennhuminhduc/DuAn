@@ -1,66 +1,36 @@
-import { useEffect, useState } from "react";
-import { searchPlayers } from "../lib/api";
+import React, { useState } from 'react'
+import './TopBar.css'
 
-const TopBar = ({ setSelectedPlayer }) => {
-  const [keyword, setKeyword] = useState("");
-  const [results, setResults] = useState([]);
+const TopBar = () => {
+  const [searchTerm, setSearchTerm] = useState('')
 
-  useEffect(() => {
-    const delay = setTimeout(async () => {
-      if (!keyword) return setResults([]);
-
-      const data = await searchPlayers(keyword);
-      setResults(data?.response || []);
-    }, 400);
-
-    return () => clearTimeout(delay);
-  }, [keyword]);
+  const handleSearch = (e) => {
+    e.preventDefault()
+    console.log('Searching for:', searchTerm)
+  }
 
   return (
-    <div style={{ position: "relative", padding: "20px" }}>
-      <input
-        value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
-        placeholder="Search player..."
-        style={{ padding: "10px", width: "300px" }}
-      />
-
-      {/* DROPDOWN */}
-      {results.length > 0 && (
-        <div
-          style={{
-            position: "absolute",
-            background: "#fff",
-            width: "300px",
-            border: "1px solid #ccc",
-            marginTop: "5px",
-            zIndex: 10,
-          }}
-        >
-          {results.map((item, index) => (
-            <div
-              key={index}
-              onClick={() => {
-                setSelectedPlayer(item);
-                setKeyword("");
-                setResults([]);
-              }}
-              style={{
-                padding: "10px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              <img src={item.player.photo} width="30" />
-              <span>{item.player.name}</span>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="top-bar">
+      <div className="logo">
+        <h1>⚽ FootballLive</h1>
+      </div>
+      <div className="nav-links">
+        <a href="/">Trang chủ</a>
+        <a href="/matches">Trận đấu</a>
+        <a href="/rankings">Bảng xếp hạng</a>
+        <a href="/news">Tin tức</a>
+      </div>
+      <form onSubmit={handleSearch} className="search-box">
+        <input
+          type="text"
+          placeholder="Tìm kiếm trận đấu, đội bóng..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button type="submit">🔍</button>
+      </form>
     </div>
-  );
-};
+  )
+}
 
-export default TopBar;
+export default TopBar
