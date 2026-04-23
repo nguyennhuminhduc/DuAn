@@ -1,6 +1,7 @@
 .player-stats {
-  background: white;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 20px;
   overflow-x: auto;
 }
 
@@ -8,40 +9,41 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 15px;
 }
 
 .stats-header h3 {
   margin: 0;
   font-size: 16px;
-  color: #333;
+  color: #fff;
 }
 
 .stats-filters {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .filter-btn {
-  padding: 6px 12px;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
   border-radius: 20px;
   font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .filter-btn:hover {
-  background: #e9ecef;
+  background: rgba(255, 107, 107, 0.3);
 }
 
 .filter-btn.active {
-  background: #667eea;
+  background: #ff6b6b;
   color: white;
-  border-color: #667eea;
 }
 
 .stats-table {
@@ -56,46 +58,39 @@ table {
 }
 
 th {
-  background: #f8f9fa;
   padding: 12px 8px;
   text-align: center;
   font-weight: 600;
-  color: #666;
-  border-bottom: 1px solid #e9ecef;
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 12px;
 }
 
 td {
   padding: 10px 8px;
   text-align: center;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 tr:hover {
-  background: #f8f9fa;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .player-name-cell {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 500;
-  color: #333;
+  color: #fff;
   text-align: left;
 }
 
 .player-rating {
   font-weight: bold;
-  color: #667eea;
+  color: #ff6b6b;
 }
 
 .rating-high {
-  color: #ff4444;
-}
-
-@media (max-width: 768px) {
-  .stats-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  color: #ff6b6b;
+  font-weight: bold;
 }

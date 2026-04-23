@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import TopBar from './components/TopBar'
-import LeftPanel from './components/LeftPanel'
+import MatchList from './components/MatchList'
 import MatchDetails from './components/MatchDetails'
+import TopPlayers from './components/TopPlayers'
 import { fetchMatches } from './lib/api'
 import './App.css'
 
@@ -21,6 +22,11 @@ function App() {
       
       const transformedMatches = data.map(fixture => ({
         id: fixture.fixture.id,
+        league: {
+          name: fixture.league.name,
+          country: fixture.league.country,
+          logo: fixture.league.logo
+        },
         homeTeam: {
           name: fixture.teams.home.name,
           logo: fixture.teams.home.logo
@@ -31,11 +37,10 @@ function App() {
         },
         homeScore: fixture.goals.home ?? 0,
         awayScore: fixture.goals.away ?? 0,
-        status: fixture.fixture.status.short === 'FT' ? 'Full Time' : 
-                 fixture.fixture.status.short === 'LIVE' ? 'Live' : 'Not Started',
+        status: fixture.fixture.status.short,
+        elapsed: fixture.fixture.status.elapsed,
         date: fixture.fixture.date,
-        venue: fixture.fixture.venue.name,
-        additionalTime: fixture.fixture.status.elapsed || null
+        venue: fixture.fixture.venue.name
       }))
       
       setMatches(transformedMatches)
@@ -62,11 +67,10 @@ function App() {
     <div className="app">
       <TopBar />
       <div className="main-container">
-        <LeftPanel 
-          matches={matches} 
-          selectedMatch={selectedMatch}
-          onSelectMatch={setSelectedMatch} 
-        />
+        <div className="left-panel">
+          <MatchList matches={matches} onSelectMatch={setSelectedMatch} />
+          <TopPlayers />
+        </div>
         <div className="content-container">
           {selectedMatch ? (
             <MatchDetails match={selectedMatch} />
