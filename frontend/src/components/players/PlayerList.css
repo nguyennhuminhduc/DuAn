@@ -1,0 +1,52 @@
+.player-list {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 1.5rem;
+  min-height: 400px;
+}
+
+.player-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.player-list-header h2 {
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.result-count {
+  font-size: 0.85rem;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.player-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  min-height: 400px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.player-list-empty p {
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.player-list-empty small {
+  color: #999;
+}

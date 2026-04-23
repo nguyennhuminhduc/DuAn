@@ -1,11 +1,9 @@
 import express from "express";
-import tasksRoute from "./routes/footballRouters.js";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
-import fetch from "node-fetch";
-
+import apiRoutes from "./routes/apiRoutes.js";
 
 dotenv.config();
 
@@ -14,94 +12,41 @@ const __dirname = path.resolve();
 
 const app = express();
 
-
-// middlewares
+// Middlewares
 app.use(express.json());
+app.use(cors({ origin: "http://localhost:5173" }));
 
-if (process.env.NODE_ENV !== "production") {
-  app.use(cors({ origin: "http://localhost:5173" }));
-}
-// ===== API FOOTBALL =====
+// API Routes
+app.use('/api', apiRoutes);
 
-// 🔍 Search player
-app.get("/api/players", async (req, res) => {
-  try {
-    const name = req.query.search; // FIX ở đây
-    
-
-    if (!name) {
-      return res.status(400).json({ error: "Missing search query" });
-    }
-
-    const response = await fetch(
-      `https://v3.football.api-sports.io/players?search=${name}`,
-      {
-        headers: {
-          "x-apisports-key": process.env.API_KEY,
-        },
-      }
-    );
-
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ error: "Lỗi players" });
-  }
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Football API is running' });
 });
 
-// ⚽ Match hôm nay
-app.get("/api/matches", async (req, res) => {
-  try {
-    const today = new Date().toISOString().split("T")[0];
-
-    const response = await fetch(
-      `https://v3.football.api-sports.io/fixtures?date=${today}`,
-      {
-        headers: {
-          "x-apisports-key": process.env.API_KEY,
-        },
-      }
-    );
-
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ error: "Lỗi matches" });
-  }
+// Test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API is working!' });
 });
-
-// 🏆 Standings
-app.get("/api/standings", async (req, res) => {
-  try {
-    const response = await fetch(
-      `https://v3.football.api-sports.io/standings?league=39&season=2024`,
-      {
-        headers: {
-          "x-apisports-key": process.env.API_KEY,
-        },
-      }
-    );
-
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ error: "Lỗi standings" });
-  }
-});
-
-
-app.use("/api/tasks", tasksRoute);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
   });
 }
 
+// Kết nối database và start server
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`server bắt đầu trên cổng ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📊 API available at http://localhost:${PORT}/api/matches`);
+  });
+}).catch(err => {
+  console.error("Database connection failed:", err);
+  // Vẫn start server dù database lỗi
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT} (without database)`);
+    console.log(`📊 API available at http://localhost:${PORT}/api/matches`);
   });
 });
