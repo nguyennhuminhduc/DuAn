@@ -1,64 +1,57 @@
-import React, { useEffect, useState } from 'react'
-import MatchList from '../components/matches/MatchList'
-import Loader from '../components/common/Loader'
-import ErrorMessage from '../components/common/ErrorMessage'
-import { api } from "../lib/api"
-import './MatchesPage.css'
+import { useState, useEffect } from 'react'
+import { getMatches } from '../lib/api'
+import MatchCard from '../components/MatchCard'
 
-const MatchesPage = () => {
+function MatchesPage() {
   const [matches, setMatches] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [filter, setFilter] = useState('all')
 
   useEffect(() => {
-    loadMatches()
-  }, [filter])
-
-  const loadMatches = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      let data
-      if (filter === 'live') {
-        data = await getLiveMatches()
-      } else {
-        data = await getMatches()
+    const fetchMatches = async () => {
+      setLoading(true)
+      setError(null)
+      
+      try {
+        const data = await getMatches()
+        setMatches(data || [])
+      } catch (err) {
+        setError(err.message || 'Failed to fetch matches')
+        setMatches([])
+      } finally {
+        setLoading(false)
       }
-      setMatches(data || [])
-    } catch (err) {
-      console.error('Load matches error:', err)
-      setError(err.message || 'Không thể tải dữ liệu trận đấu')
-    } finally {
-      setLoading(false)
     }
-  }
+
+    fetchMatches()
+  }, [])
 
   return (
-    <div className="matches-page">
+    <div className="page-container">
       <div className="page-header">
-        <h1>📅 Lịch thi đấu</h1>
-        <div className="filter-buttons">
-          <button 
-            className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-            onClick={() => setFilter('all')}
-          >
-            Tất cả
-          </button>
-          <button 
-            className={`filter-btn ${filter === 'live' ? 'active' : ''}`}
-            onClick={() => setFilter('live')}
-          >
-            🔴 Trực tiếp
-          </button>
-        </div>
+        <h2 className="page-title">Matches</h2>
       </div>
+
+      {loading && <div className="loading">Loading matches...</div>}
       
-      {loading && <Loader message="Đang tải trận đấu..." />}
-      {error && <ErrorMessage message={error} onRetry={loadMatches} />}
-      
-      {!loading && !error && (
-        <MatchList matches={matches} loading={loading} />
+      {error && (
+        <div className="error-message">
+          Error: {error}
+        </div>
+      )}
+
+      {!loading && !error && matches.length === 0 && (
+        <div className="empty-state">
+          No matches found
+        </div>
+      )}
+
+      {!loading && !error && matches.length > 0 && (
+        <div className="grid-container">
+          {matches.map(match => (
+            <MatchCard key={match.id} match={match} />
+          ))}
+        </div>
       )}
     </div>
   )

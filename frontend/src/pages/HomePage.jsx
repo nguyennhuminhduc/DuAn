@@ -1,43 +1,30 @@
-import React, { useEffect, useState } from 'react'
-import MatchList from '../components/matches/MatchList'
-import Loader from '../components/common/Loader'
-import ErrorMessage from '../components/common/ErrorMessage'
-import { api } from "../lib/api";
-import './HomePage.css'
-
-const HomePage = () => {
-  const [matches, setMatches] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    loadMatches()
-  }, [])
-
-  const loadMatches = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await getMatches()
-      setMatches(data || [])
-    } catch (err) {
-      console.error('Load matches error:', err)
-      setError(err.message || 'Không thể tải dữ liệu trận đấu')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) return <Loader message="Đang tải trận đấu..." />
-  if (error) return <ErrorMessage message={error} onRetry={loadMatches} />
-
+function HomePage() {
   return (
-    <div className="home-page">
+    <div className="page-container">
       <div className="hero-section">
-        <h1>⚽ Chào mừng đến với FootballHub</h1>
-        <p>Cập nhật kết quả bóng đá trực tiếp, thông tin cầu thủ và nhiều hơn nữa</p>
+        <h1 className="hero-title">Welcome to Football App</h1>
+        <p className="hero-subtitle">
+          Your destination for football players and matches information
+        </p>
       </div>
-      <MatchList matches={matches} loading={loading} />
+      
+      <div className="features-grid">
+        <div className="feature-card">
+          <div className="feature-icon">👤</div>
+          <h3>Players</h3>
+          <p>Search and explore football players from various leagues</p>
+        </div>
+        <div className="feature-card">
+          <div className="feature-icon">⚽</div>
+          <h3>Matches</h3>
+          <p>View upcoming and recent matches with live scores</p>
+        </div>
+        <div className="feature-card">
+          <div className="feature-icon">📊</div>
+          <h3>Statistics</h3>
+          <p>Access comprehensive football statistics and data</p>
+        </div>
+      </div>
     </div>
   )
 }

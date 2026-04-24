@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import Header from './components/common/Header'
+import { useState } from 'react'
+import Navbar from './components/Navbar'
 import HomePage from './pages/HomePage'
 import PlayersPage from './pages/PlayersPage'
 import MatchesPage from './pages/MatchesPage'
 import './App.css'
 
-const App = () => {
+function App() {
   const [currentPage, setCurrentPage] = useState('home')
 
   const renderPage = () => {
@@ -23,13 +23,10 @@ const App = () => {
 
   return (
     <div className="app">
-      <Header activePage={currentPage} onPageChange={setCurrentPage} />
-      <main className="main-content">
+      <Navbar currentPage={currentPage} onNavigate={setCurrentPage} />
+      <main className="main-content fade-in">
         {renderPage()}
       </main>
-      <footer className="footer">
-        <p>© 2024 FootballHub - Dữ liệu bóng đá trực tiếp</p>
-      </footer>
     </div>
   )
 }
